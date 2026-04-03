@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hi, I'm YourName</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fef3e2', 100: '#fde4b9', 200: '#fcd48c', 300: '#fbc35f',
+              400: '#fab03d', 500: '#f99d1c', 600: '#f59019', 700: '#ef7e16',
+              800: '#e96d13', 900: '#df500d'
+            },
+            surface: {
+              50: '#fefdfb', 100: '#fdf8f0', 200: '#faf3e8'
+            },
+            ink: {
+              50: '#f5f5f4', 100: '#d6d3d1', 200: '#a8a29e',
+              300: '#78716c', 400: '#57534e', 500: '#44403c',
+              600: '#292524', 700: '#1c1917', 800: '#0f0e0d', 900: '#0a0908'
+            }
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background: #fefdfb; cursor: default; }
+
+    /* ===== Cursor glow ===== */
+    #cursorGlow {
+      position: fixed; width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,157,28,0.08) 0%, transparent 70%);
+      pointer-events: none; z-index: 0; transform: translate(-50%, -50%);
+    }
+
+    /* ===== Blobs ===== */
+    .blob {
+      position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.3;
+      pointer-events: none; z-index: 0;
+      animation: blob-drift 20s ease-in-out infinite alternate;
+    }
+    @keyframes blob-drift {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+      100% { transform: translate(10px, -10px) scale(1.02); }
+    }
+
+    /* ===== Nav links ===== */
+    .nav-link { position: relative; transition: color 0.2s; }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 2px; background: #f99d1c; border-radius: 2px;
+      transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: #292524; }
+
+    /* ===== Wavy underline ===== */
+    .wavy-underline {
+      text-decoration: underline; text-decoration-style: wavy;
+      text-decoration-color: #f99d1c; text-underline-offset: 6px;
+    }
+
+    /* ===== Avatar ===== */
+    .avatar-outer { position: relative; display: inline-block; }
+    .avatar-ring {
+      position: absolute; inset: -4px; border-radius: 50%;
+      border: 2px dashed #fcd48c; animation: ring-spin 12s linear infinite;
+    }
+    @keyframes ring-spin { to { transform: rotate(360deg); } }
+    .avatar-circle {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .avatar-circle:hover {
+      transform: scale(1.1) rotate(8deg);
+      box-shadow: 0 12px 32px rgba(249,157,28,0.35);
+    }
+
+    /* ===== Emoji float ===== */
+    .emoji-float { display: inline-block; animation: float 3s ease-in-out infinite; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-6px) rotate(5deg); }
+      75% { transform: translateY(-3px) rotate(-3deg); }
+    }
+
+    /* ===== Pet Card ===== */
+    .pet-card {
+      position: relative;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    }
+    .pet-card::before {
+      content: ''; position: absolute; inset: 0;
+      border-radius: inherit; padding: 1px;
+      background: linear-gradient(135deg, transparent 40%, rgba(249,157,28,0) 40%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      transition: background 0.4s; pointer-events: none; z-index: 5;
+    }
+    .pet-card:hover::before {
+      background: linear-gradient(135deg, #fbc35f, #fab03d, #f99d1c, #ef7e16);
+    }
+    .pet-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.08), 0 0 0 1px rgba(249,157,28,0.2);
+    }
+    .card-arrow {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+    }
+    .pet-card:hover .card-arrow { transform: translate(4px, -4px); color: #f59019; }
+    .tech-tag { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .pet-card:hover .tech-tag { background: #fef3e2; color: #ef7e16; }
+
+    /* ===== Peeking Pet — hangs over right edge of card ===== */
+    .peeking-pet {
+      position: absolute;
+      right: 24px;
+      top: -10px;
+      width: 140px;
+      height: 110px;
+      z-index: 4;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0;
+      transition: top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+    .peeking-pet img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .pet-card:hover .peeking-pet {
+      top: -58px;
+      opacity: 1;
+      transform: rotate(-3deg);
+    }
+    .pet-card:hover .peeking-pet img {
+      animation: pet-wobble 1.5s ease-in-out infinite;
+    }
+    @keyframes pet-wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      75% { transform: rotate(-3deg); }
+    }
+
+    /* Pet speech bubble */
+    .pet-speech {
+      position: absolute;
+      right: 120px;
+      top: -36px;
+      font-size: 12px;
+      background: white;
+      border: 1px solid #faf3e8;
+      padding: 4px 12px;
+      border-radius: 12px 12px 4px 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      transition: opacity 0.3s 0.2s, transform 0.3s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: translateY(8px);
+      z-index: 4;
+      color: #57534e;
+    }
+    .pet-card:hover .pet-speech {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== Skill tags ===== */
+    .skill-tag {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default; user-select: none;
+    }
+    .skill-tag:hover { transform: scale(1.12) rotate(-2deg); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+    /* ===== Social links ===== */
+    .social-link {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative; overflow: hidden;
+    }
+    .social-link::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(249,157,28,0.1), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .social-link:hover::after { opacity: 1; }
+    .social-link:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .social-link:hover .social-icon {
+      animation: icon-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes icon-bounce {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.3) rotate(-10deg); }
+      70% { transform: scale(0.9) rotate(5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* ===== Section star ===== */
+    .section-star { display: inline-block; }
+    h2:hover .section-star { animation: star-spin 0.6s ease; }
+    @keyframes star-spin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.3); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* ===== Fade in ===== */
+    .fade-up {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== Sparkle ===== */
+    .sparkle {
+      position: absolute; pointer-events: none;
+      animation: sparkle-pop 0.7s ease-out forwards;
+    }
+    @keyframes sparkle-pop {
+      0% { opacity: 0; transform: scale(0) translateY(0); }
+      30% { opacity: 1; transform: scale(1.2) translateY(-10px); }
+      100% { opacity: 0; transform: scale(0.6) translateY(-30px); }
+    }
+
+    /* ===== Magnetic card ===== */
+    .magnetic-card { transition: transform 0.2s ease-out; }
+
+    /* ===== Tooltip ===== */
+    .skill-tooltip { position: relative; }
+    .skill-tooltip::before {
+      content: attr(data-tip);
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #292524; color: #fff; padding: 4px 10px; border-radius: 8px;
+      font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .skill-tooltip:hover::before { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===== Footer ===== */
+    .heart { display: inline-block; color: #f87171; animation: heartbeat 1.2s ease-in-out infinite; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); }
+      30% { transform: scale(1); } 45% { transform: scale(1.15); } 60% { transform: scale(1); }
+    }
+    .footer-text:hover .footer-secret { max-width: 200px; opacity: 1; margin-left: 6px; }
+    .footer-secret {
+      max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block;
+    }
+
+    /* ===== Title char reveal ===== */
+    .char-reveal span { display: inline-block; opacity: 0; transform: translateY(14px); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .char-reveal.revealed span { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body class="font-sans text-ink-600 antialiased overflow-x-hidden">
+
+  <!-- Cursor glow -->
+  <div id="cursorGlow"></div>
+
+  <!-- Decorative blobs -->
+  <div class="blob w-96 h-96 bg-primary-300 top-20 -left-48"></div>
+  <div class="blob w-80 h-80 bg-orange-200 top-96 -right-40" style="animation-delay: -7s;"></div>
+  <div class="blob w-64 h-64 bg-yellow-200 bottom-40 left-1/3" style="animation-delay: -13s;"></div>
+
+  <!-- Header -->
+  <header class="relative z-10 max-w-3xl mx-auto px-6 pt-8 pb-4">
+    <nav class="flex items-center justify-between">
+      <span class="text-lg font-bold text-ink-700 font-display cursor-default select-none" id="logo">YN.</span>
+      <div class="flex items-center gap-6 text-sm text-ink-300">
+        <a href="#about" class="nav-link">关于</a>
+        <a href="#projects" class="nav-link">项目</a>
+        <a href="#contact" class="nav-link">联系</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="relative z-10">
+    <!-- Hero -->
+    <section class="max-w-3xl mx-auto px-6 pt-16 pb-20">
+      <div class="fade-up">
+        <div class="mb-8 avatar-outer" id="avatarWrap">
+          <div class="avatar-ring"></div>
+          <div class="avatar-circle w-24 h-24 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-4xl font-display shadow-lg shadow-primary-200/50 select-none" id="avatar">Y</div>
+          <span class="absolute -bottom-1 -right-1 text-2xl emoji-float">👋</span>
+        </div>
+        <h1 class="font-display text-4xl md:text-5xl font-extrabold text-ink-700 leading-tight mb-4 char-reveal" id="heroTitle">
+          嗨, 我是 <span class="wavy-underline">YourName</span>
+        </h1>
+        <p class="text-xl text-ink-300 leading-relaxed mb-2">
+          一个对<span class="inline-block transition-transform hover:scale-110 hover:text-primary-600 cursor-default">技术</span>和<span class="inline-block transition-transform hover:scale-110 hover:text-primary-600 cursor-default">创造</span>充满热情的人。
+        </p>
+        <p class="text-lg text-ink-200 leading-relaxed max-w-xl">
+          我喜欢用代码构建有趣的东西，探索新技术，偶尔写写文字记录想法。目前在做一些好玩的 side projects，也在持续学习中。
+        </p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="max-w-3xl mx-auto px-6 pb-20">
+      <div class="fade-up">
+        <h2 class="font-display text-2xl font-bold text-ink-700 mb-6 flex items-center gap-2 cursor-default">
+          <span class="section-star text-primary-500">✦</span> 关于我
+        </h2>
+        <div class="magnetic-card bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-surface-200 shadow-sm" id="aboutCard">
+          <p class="text-ink-400 leading-relaxed mb-4">
+            在这里写上你的个人介绍。可以聊聊你的背景、兴趣爱好、职业经历，或者任何你想让别人了解的事情。
+          </p>
+          <p class="text-ink-400 leading-relaxed mb-6">
+            比如你的工作领域、技术栈偏好、业余爱好、最近在关注什么…… 让来访者感受到一个真实的你。
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium" data-tip="最爱的语言 💛"><span class="material-icons-outlined text-base">code</span> JavaScript</span>
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium" data-tip="类型安全真香"><span class="material-icons-outlined text-base">language</span> TypeScript</span>
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium" data-tip="全栈利器 🚀"><span class="material-icons-outlined text-base">hub</span> Node.js</span>
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-sky-50 text-sky-700 rounded-full text-sm font-medium" data-tip="组件化万岁"><span class="material-icons-outlined text-base">web</span> React</span>
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-full text-sm font-medium" data-tip="像素眼 👀"><span class="material-icons-outlined text-base">palette</span> UI Design</span>
+            <span class="skill-tag skill-tooltip inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 text-rose-700 rounded-full text-sm font-medium" data-tip="记录生活 📸"><span class="material-icons-outlined text-base">photo_camera</span> Photography</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects — pets peeking over cards -->
+    <section id="projects" class="max-w-3xl mx-auto px-6 pb-20">
+      <div class="fade-up">
+        <h2 class="font-display text-2xl font-bold text-ink-700 mb-6 flex items-center gap-2 cursor-default">
+          <span class="section-star text-primary-500">✦</span> 项目 & 作品
+        </h2>
+        <div class="grid gap-8 pt-12">
+
+          <!-- Project 1 — Puppy peeking -->
+          <a href="#" class="pet-card block bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-surface-200 shadow-sm group">
+            <div class="peeking-pet">
+              <img src="assets/dog.png" alt="Cute Scottish Terrier">
+            </div>
+            <span class="pet-speech">汪! 快来看看~</span>
+            <div class="flex items-start justify-between gap-4 relative z-10">
+              <div>
+                <h3 class="font-semibold text-ink-700 text-lg mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-2">
+                  Project Name
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-normal">Active</span>
+                </h3>
+                <p class="text-ink-300 text-sm leading-relaxed">用一两句话描述这个项目做了什么，解决了什么问题。</p>
+              </div>
+              <span class="material-icons-outlined card-arrow text-ink-100 text-xl mt-1 shrink-0">arrow_outward</span>
+            </div>
+            <div class="flex gap-2 mt-4 relative z-10">
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">React</span>
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">TypeScript</span>
+            </div>
+          </a>
+
+          <!-- Project 2 — Cat peeking -->
+          <a href="#" class="pet-card block bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-surface-200 shadow-sm group">
+            <div class="peeking-pet" style="right: 60px;">
+              <img src="assets/cat.png" alt="Cute British Shorthair">
+            </div>
+            <span class="pet-speech" style="right: 155px;">喵~ 被你发现啦</span>
+            <div class="flex items-start justify-between gap-4 relative z-10">
+              <div>
+                <h3 class="font-semibold text-ink-700 text-lg mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-2">
+                  Another Project
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-normal">Open Source</span>
+                </h3>
+                <p class="text-ink-300 text-sm leading-relaxed">再写一个项目的简要描述，比如一个有趣的工具、一个开源库。</p>
+              </div>
+              <span class="material-icons-outlined card-arrow text-ink-100 text-xl mt-1 shrink-0">arrow_outward</span>
+            </div>
+            <div class="flex gap-2 mt-4 relative z-10">
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">Node.js</span>
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">CLI</span>
+            </div>
+          </a>
+
+          <!-- Project 3 — Panda peeking (the star!) -->
+          <a href="#" class="pet-card block bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-surface-200 shadow-sm group">
+            <div class="peeking-pet" style="right: 100px;">
+              <img src="assets/panda.png" alt="Cute Panda">
+            </div>
+            <span class="pet-speech" style="right: 195px;">嘿嘿~ 超好玩的!</span>
+            <div class="flex items-start justify-between gap-4 relative z-10">
+              <div>
+                <h3 class="font-semibold text-ink-700 text-lg mb-1 group-hover:text-primary-600 transition-colors flex items-center gap-2">
+                  Fun Side Project
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-primary-100 text-primary-700 font-normal">Fun</span>
+                </h3>
+                <p class="text-ink-300 text-sm leading-relaxed">一个好玩的小项目，展示你的创造力和技术探索精神。</p>
+              </div>
+              <span class="material-icons-outlined card-arrow text-ink-100 text-xl mt-1 shrink-0">arrow_outward</span>
+            </div>
+            <div class="flex gap-2 mt-4 relative z-10">
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">CSS</span>
+              <span class="tech-tag text-xs px-2 py-0.5 rounded bg-surface-200 text-ink-300">Canvas</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="max-w-3xl mx-auto px-6 pb-24">
+      <div class="fade-up">
+        <h2 class="font-display text-2xl font-bold text-ink-700 mb-6 flex items-center gap-2 cursor-default">
+          <span class="section-star text-primary-500">✦</span> 找到我
+        </h2>
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-surface-200 shadow-sm">
+          <p class="text-ink-400 leading-relaxed mb-6">
+            欢迎通过以下方式联系我，无论是合作、闲聊还是单纯打个招呼 <span class="emoji-float inline-block">✨</span>
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="mailto:hello@yourdomain.com" class="social-link inline-flex items-center gap-2 px-5 py-2.5 bg-ink-700 text-white rounded-xl text-sm font-medium hover:bg-ink-800 shadow-sm relative z-10">
+              <span class="material-icons-outlined text-lg social-icon">mail</span> Email
+            </a>
+            <a href="#" class="social-link inline-flex items-center gap-2 px-5 py-2.5 bg-white text-ink-600 rounded-xl text-sm font-medium border border-surface-200 hover:border-ink-100 shadow-sm relative z-10">
+              <svg class="w-4 h-4 social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              GitHub
+            </a>
+            <a href="#" class="social-link inline-flex items-center gap-2 px-5 py-2.5 bg-white text-ink-600 rounded-xl text-sm font-medium border border-surface-200 hover:border-ink-100 shadow-sm relative z-10">
+              <svg class="w-4 h-4 social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter / X
+            </a>
+            <a href="#" class="social-link inline-flex items-center gap-2 px-5 py-2.5 bg-white text-ink-600 rounded-xl text-sm font-medium border border-surface-200 hover:border-ink-100 shadow-sm relative z-10">
+              <span class="material-icons-outlined text-lg social-icon">chat</span> 微信
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-surface-200 bg-white/50 backdrop-blur-sm">
+    <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink-200">
+      <span>&copy; 2026 YourName</span>
+      <span class="footer-text flex items-center gap-1 cursor-default select-none">
+        Made with <span class="heart">&#10084;</span>
+        <span class="footer-secret">and mass quantities of coffee ☕</span>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Cursor glow =====
+    const glow = document.getElementById('cursorGlow');
+    let glowX = 0, glowY = 0, curX = 0, curY = 0;
+    document.addEventListener('mousemove', e => { curX = e.clientX; curY = e.clientY; });
+    function animateGlow() {
+      glowX += (curX - glowX) * 0.08;
+      glowY += (curY - glowY) * 0.08;
+      glow.style.left = glowX + 'px';
+      glow.style.top = glowY + 'px';
+      requestAnimationFrame(animateGlow);
+    }
+    animateGlow();
+
+    // ===== Scroll fade-in =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ===== Hero title char-by-char =====
+    const heroTitle = document.getElementById('heroTitle');
+    let charIndex = 0;
+    function wrapChars(node) {
+      if (node.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        for (const ch of node.textContent) {
+          if (ch === ' ') { frag.appendChild(document.createTextNode(' ')); }
+          else {
+            const s = document.createElement('span');
+            s.textContent = ch;
+            s.style.transitionDelay = (charIndex * 30) + 'ms';
+            charIndex++;
+            frag.appendChild(s);
+          }
+        }
+        return frag;
+      }
+      const clone = node.cloneNode(false);
+      node.childNodes.forEach(child => clone.appendChild(wrapChars(child)));
+      return clone;
+    }
+    const wrapped = wrapChars(heroTitle);
+    heroTitle.innerHTML = '';
+    heroTitle.appendChild(wrapped);
+    heroTitle.classList.add('char-reveal');
+    const titleObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => heroTitle.classList.add('revealed'), 200);
+          titleObserver.disconnect();
+        }
+      });
+    });
+    titleObserver.observe(heroTitle);
+
+    // ===== Smooth scroll =====
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // ===== Avatar sparkle =====
+    const avatar = document.getElementById('avatar');
+    const avatarWrap = document.getElementById('avatarWrap');
+    const sparkleEmojis = ['✨', '⭐', '🌟', '💫', '🎉', '🪄', '💛'];
+    avatar.addEventListener('click', function() {
+      for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = 40 + Math.random() * 30;
+        sparkle.style.left = (48 + Math.cos(angle) * dist) + 'px';
+        sparkle.style.top = (48 + Math.sin(angle) * dist - 20) + 'px';
+        sparkle.style.fontSize = (14 + Math.random() * 10) + 'px';
+        avatarWrap.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 700);
+      }
+    });
+
+    // ===== About card magnetic tilt =====
+    const aboutCard = document.getElementById('aboutCard');
+    aboutCard.addEventListener('mousemove', function(e) {
+      const rect = this.getBoundingClientRect();
+      const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -3;
+      const rotateY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 3;
+      this.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    aboutCard.addEventListener('mouseleave', function() {
+      this.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
+    });
+
+    // ===== Logo easter egg =====
+    let logoClicks = 0;
+    document.getElementById('logo').addEventListener('click', function() {
+      logoClicks++;
+      if (logoClicks >= 5) {
+        document.body.style.transition = 'filter 0.5s';
+        document.body.style.filter = 'hue-rotate(180deg)';
+        setTimeout(() => { document.body.style.filter = 'none'; }, 2000);
+        logoClicks = 0;
+      }
+    });
+
+    // ===== Skill tags staggered entrance =====
+    const skillObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.skill-tag').forEach((tag, i) => {
+            setTimeout(() => {
+              tag.style.transform = 'scale(1.15) rotate(' + (Math.random() * 6 - 3) + 'deg)';
+              setTimeout(() => { tag.style.transform = ''; }, 250);
+            }, i * 80 + 300);
+          });
+          skillObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    skillObserver.observe(aboutCard);
+  </script>
+
+</body>
+</html>
